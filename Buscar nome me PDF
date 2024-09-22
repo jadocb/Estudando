@@ -1,0 +1,40 @@
+import os
+import PyPDF2
+
+def buscar_nome_em_pdfs(pasta, nome):
+    arquivos_pdf = [f for f in os.listdir(pasta) if f.endswith('.pdf')]
+    encontrados = []
+
+    for arquivo in arquivos_pdf:
+        caminho_arquivo = os.path.join(pasta, arquivo)
+        with open(caminho_arquivo, 'rb') as pdf_file:
+            leitor_pdf = PyPDF2.PdfFileReader(pdf_file)
+            num_paginas = leitor_pdf.getNumPages()
+
+            for pagina in range(num_paginas):
+                texto_pagina = leitor_pdf.getPage(pagina).extract_text()
+                if nome in texto_pagina:
+                    encontrados.append(arquivo)
+                    break
+
+    return encontrados
+
+# Exemplo de uso
+if __name__ == "__main__":
+    pasta = 'caminho/para/sua/pasta'  # Substitua pelo caminho da sua pasta
+
+    while True:
+        nome = input("Digite o nome a ser buscado nos PDFs (ou 'sair' para encerrar): ")
+        if nome.lower() == 'sair':
+            print("Encerrando o programa.")
+            break
+
+        resultados = buscar_nome_em_pdfs(pasta, nome)
+
+        if resultados:
+            print("Nome encontrado nos seguintes arquivos PDF:")
+            for resultado in resultados:
+                print(resultado)
+            break
+        else:
+            print("Nome não encontrado em nenhum arquivo PDF. Tente novamente.")
